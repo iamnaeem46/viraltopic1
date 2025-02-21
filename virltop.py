@@ -20,8 +20,8 @@ keywords = [
 # Fetch Data Button
 if st.button("Fetch Viral Videos"):
     try:
-        # Calculate date range (Last 30 days)
-        start_date = (datetime.utcnow() - timedelta(days=30)).isoformat("T") + "Z"
+        # Calculate date range (Last 7 days)
+        start_date = (datetime.utcnow() - timedelta(days=7)).isoformat("T") + "Z"
         all_results = []
 
         # Iterate over the list of keywords
@@ -36,8 +36,6 @@ if st.button("Fetch Viral Videos"):
                 "order": "viewCount",
                 "publishedAfter": start_date,
                 "maxResults": 10,
-                "videoDuration": "medium",  # Exclude YouTube Shorts
-                "relevanceLanguage": "en",  # Fetch only English videos
                 "key": API_KEY,
             }
 
@@ -66,26 +64,15 @@ if st.button("Fetch Viral Videos"):
                 title = video["snippet"].get("title", "N/A")
                 description = video["snippet"].get("description", "")[:200]
                 video_url = f"https://www.youtube.com/watch?v={video['id']['videoId']}"
-                channel_id = video["snippet"]["channelId"]
                 views = int(stat["statistics"].get("viewCount", 0))
-                
-                if views >= 50000:
-                    # Fetch channel details
-                    channel_params = {"part": "statistics", "id": channel_id, "key": API_KEY}
-                    channel_response = requests.get(YOUTUBE_CHANNEL_URL, params=channel_params)
-                    channel_data = channel_response.json()
 
-                    if "items" in channel_data and channel_data["items"]:
-                        subscribers = int(channel_data["items"][0]["statistics"].get("subscriberCount", 0))
-                        
-                        if subscribers >= 1000:
-                            all_results.append({
-                                "Title": title,
-                                "Description": description,
-                                "URL": video_url,
-                                "Views": views,
-                                "Subscribers": subscribers
-                            })
+                if views >= 50000:
+                    all_results.append({
+                        "Title": title,
+                        "Description": description,
+                        "URL": video_url,
+                        "Views": views
+                    })
 
         # Display results
         if all_results:
@@ -95,11 +82,10 @@ if st.button("Fetch Viral Videos"):
                     f"**Title:** {result['Title']}  \n"
                     f"**Description:** {result['Description']}  \n"
                     f"**URL:** [Watch Video]({result['URL']})  \n"
-                    f"**Views:** {result['Views']}  \n"
-                    f"**Subscribers:** {result['Subscribers']}  "
+                    f"**Views:** {result['Views']}  "
                 )
                 st.write("---")
         else:
-            st.warning("No viral videos found with more than 50,000 views in the last 30 days.")
+            st.warning("No viral videos found with more than 50,000 views in the last week.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
