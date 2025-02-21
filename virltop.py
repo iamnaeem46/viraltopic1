@@ -30,7 +30,7 @@ days = st.number_input("Enter Days to Search (1-30):", min_value=1, max_value=30
 
 keywords = [
 
- "spiritual", "CHOSEN ONES", "CHOSEN ", 
+ "Chosen Ones", "Spiritual Awakening", "Chosen Ones Spiritual", "Spiritual", 
 
 "Cheat Exposed"
 
@@ -160,7 +160,7 @@ if st.button("Fetch Data"):
                 subs = int(channel["statistics"].get("subscriberCount", 0))
 
 
-                if subs < 3000:  # Only include channels with fewer than 3,000 subscribers
+                if subs < 1000:  # Only include channels with fewer than 1,000 subscribers
 
                     all_results.append({
 
@@ -209,4 +209,3 @@ if st.button("Fetch Data"):
     except Exception as e:
 
         st.error(f"An error occurred: {e}")
-
