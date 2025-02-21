@@ -13,8 +13,12 @@ st.title("YouTube Viral Topics Tool")
 
 # List of broader keywords
 keywords = [
-    "Chosen Ones", "Spiritual Awakening", "Chosen Ones Spiritual", "Spiritual", 
-    "Cheat Exposed"
+    "Chosen Ones", "Spiritual Awakening", "Chosen Ones Spiritual", "Spiritual",
+    "Cheat Exposed", "Signs You Are Chosen", "Lightworkers", "Spiritual Journey",
+    "Star Seeds", "Higher Consciousness", "Third Eye Awakening", "Manifestation",
+    "Law of Attraction", "Spiritual Growth", "Divine Calling", "Energy Shift",
+    "The Matrix Awakening", "Hidden Knowledge", "Vibrational Energy", "Past Life",
+    "Twin Flame Journey"
 ]
 
 # Fetch Data Button
