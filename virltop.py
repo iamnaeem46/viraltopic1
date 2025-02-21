@@ -21,11 +21,14 @@ keywords = [
     "Twin Flame Journey"
 ]
 
+# User selects number of days for search
+days = st.slider("Select number of days to search for viral videos", 1, 30, 7)
+
 # Fetch Data Button
 if st.button("Fetch Viral Videos"):
     try:
-        # Calculate date range (Last 7 days)
-        start_date = (datetime.utcnow() - timedelta(days=7)).isoformat("T") + "Z"
+        # Calculate date range based on user input
+        start_date = (datetime.utcnow() - timedelta(days=days)).isoformat("T") + "Z"
         all_results = []
 
         # Iterate over the list of keywords
@@ -90,6 +93,6 @@ if st.button("Fetch Viral Videos"):
                 )
                 st.write("---")
         else:
-            st.warning("No viral videos found with more than 50,000 views in the last week.")
+            st.warning("No viral videos found with more than 50,000 views in the selected time range.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
