@@ -2,29 +2,33 @@ import streamlit as st
 import requests
 from datetime import datetime, timedelta
 
-# YouTube API Key (Replace with your own key)
-API_KEY = "YOUR_YOUTUBE_API_KEY"
+# YouTube API Key
+API_KEY = "AIzaSyCelOVWXb6wIietQ1Yo1nNmIC791qtYrk4"
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
+YOUTUBE_CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
 
 # Streamlit App Title
-st.title("YouTube Viral Video Finder")
+st.title("YouTube Viral Topics Tool")
 
-# List of Keywords
+# List of broader keywords
 keywords = [
-    "Chosen Ones", "Spiritual Awakening", "Manifestation", "Law of Attraction",
-    "Spiritual Journey", "Higher Consciousness", "Mindfulness", "Subconscious Mind",
-    "Meditation", "Divine Energy", "Spirituality", "Self-Realization", "Inner Peace"
+    "Chosen Ones", "Spiritual Awakening", "Chosen Ones Spiritual", "Spiritual",
+    "Cheat Exposed", "Signs You Are Chosen", "Lightworkers", "Spiritual Journey",
+    "Star Seeds", "Higher Consciousness", "Third Eye Awakening", "Manifestation",
+    "Law of Attraction", "Spiritual Growth", "Divine Calling", "Energy Shift",
+    "The Matrix Awakening", "Hidden Knowledge", "Vibrational Energy", "Past Life",
+    "Twin Flame Journey"
 ]
 
 # Fetch Data Button
-if st.button("Find Viral Videos"):
+if st.button("Fetch Viral Videos"):
     try:
-        # Calculate date range (Last 30 days)
-        start_date = (datetime.utcnow() - timedelta(days=30)).isoformat("T") + "Z"
+        # Calculate date range (Last 7 days)
+        start_date = (datetime.utcnow() - timedelta(days=7)).isoformat("T") + "Z"
         all_results = []
 
-        # Iterate over the keywords
+        # Iterate over the list of keywords
         for keyword in keywords:
             st.write(f"Searching for keyword: {keyword}")
             
@@ -35,7 +39,7 @@ if st.button("Find Viral Videos"):
                 "type": "video",
                 "order": "viewCount",
                 "publishedAfter": start_date,
-                "maxResults": 20,
+                "maxResults": 10,
                 "key": API_KEY,
             }
 
@@ -73,13 +77,6 @@ if st.button("Find Viral Videos"):
                         "URL": video_url,
                         "Views": views
                     })
-                
-                # Stop when we reach 10 videos
-                if len(all_results) >= 10:
-                    break
-
-            if len(all_results) >= 10:
-                break
 
         # Display results
         if all_results:
@@ -93,6 +90,6 @@ if st.button("Find Viral Videos"):
                 )
                 st.write("---")
         else:
-            st.warning("No viral videos found with more than 50,000 views in the last 30 days.")
+            st.warning("No viral videos found with more than 50,000 views in the last week.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
