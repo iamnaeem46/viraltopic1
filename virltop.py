@@ -71,7 +71,7 @@ if st.button("Fetch Data"):
 
                 "publishedAfter": start_date,
 
-                "maxResults": 5,
+                "maxResults": 10,
 
                 "key": API_KEY,
 
@@ -160,7 +160,7 @@ if st.button("Fetch Data"):
                 subs = int(channel["statistics"].get("subscriberCount", 0))
 
 
-                if subs < 1000:  # Only include channels with fewer than 1,000 subscribers
+                if subs < 2000:  # Only include channels with fewer than 2,000 subscribers
 
                     all_results.append({
 
