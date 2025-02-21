@@ -6,19 +6,18 @@ from datetime import datetime, timedelta
 API_KEY = "AIzaSyCelOVWXb6wIietQ1Yo1nNmIC791qtYrk4"
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
-YOUTUBE_CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
 
 # Streamlit App Title
 st.title("YouTube Viral Topics Tool")
 
 # List of broader keywords
 keywords = [
-    "Chosen Ones", "Spiritual Awakening", "Chosen Ones Spiritual", "Spiritual",
-    "Cheat Exposed", "Signs You Are Chosen", "Lightworkers", "Spiritual Journey",
-    "Star Seeds", "Higher Consciousness", "Third Eye Awakening", "Manifestation",
-    "Law of Attraction", "Spiritual Growth", "Divine Calling", "Energy Shift",
-    "The Matrix Awakening", "Hidden Knowledge", "Vibrational Energy", "Past Life",
-    "Twin Flame Journey"
+"Chosen Ones", "Spiritual Awakening", "Chosen Ones Spiritual", "Spiritual",
+"Cheat Exposed", "Signs You Are Chosen", "Lightworkers", "Spiritual Journey",
+"Star Seeds", "Higher Consciousness", "Third Eye Awakening", "Manifestation",
+"Law of Attraction", "Spiritual Growth", "Divine Calling", "Energy Shift",
+"The Matrix Awakening", "Hidden Knowledge", "Vibrational Energy", "Past Life",
+"Twin Flame Journey"
 ]
 
 # User selects number of days for search
@@ -26,73 +25,78 @@ days = st.slider("Select number of days to search for viral videos", 1, 30, 7)
 
 # Fetch Data Button
 if st.button("Fetch Viral Videos"):
-    try:
-        # Calculate date range based on user input
-        start_date = (datetime.utcnow() - timedelta(days=days)).isoformat("T") + "Z"
-        all_results = []
+try:
+# Calculate date range based on user input
+start_date = (datetime.utcnow() - timedelta(days=days)).isoformat("T") + "Z"
+all_results = []
 
-        # Iterate over the list of keywords
-        for keyword in keywords:
-            st.write(f"Searching for keyword: {keyword}")
-            
-            # Define search parameters
-            search_params = {
-                "part": "snippet",
-                "q": keyword,
-                "type": "video",
-                "order": "viewCount",
-                "publishedAfter": start_date,
-                "maxResults": 10,
-                "key": API_KEY,
-            }
+# Iterate over the list of keywords
+for keyword in keywords:
+st.write(f"Searching for keyword: {keyword}")
 
-            # Fetch video data
-            response = requests.get(YOUTUBE_SEARCH_URL, params=search_params)
-            data = response.json()
+# Define search parameters
+search_params = {
+"part": "snippet",
+"q": keyword,
+"type": "video",
+"order": "viewCount",
+"publishedAfter": start_date,
+"maxResults": 5, # Reduce maxResults to save API quota
+"key": API_KEY,
+}
 
-            if "items" not in data or not data["items"]:
-                st.warning(f"No videos found for keyword: {keyword}")
-                continue
+# Fetch video data
+response = requests.get(YOUTUBE_SEARCH_URL, params=search_params)
+data = response.json()
 
-            videos = data["items"]
-            video_ids = [video["id"]["videoId"] for video in videos]
+if "error" in data:
+st.error(f"API Error: {data['error']['message']}")
+continue
 
-            # Fetch video statistics
-            stats_params = {"part": "statistics", "id": ",".join(video_ids), "key": API_KEY}
-            stats_response = requests.get(YOUTUBE_VIDEO_URL, params=stats_params)
-            stats_data = stats_response.json()
+if "items" not in data or not data["items"]:
+st.warning(f"No videos found for keyword: {keyword}")
+continue
 
-            if "items" not in stats_data:
-                st.warning(f"Failed to fetch video statistics for keyword: {keyword}")
-                continue
+videos = data["items"]
+video_ids = [video["id"].get("videoId", "") for video in videos if "videoId" in video["id"]]
 
-            # Collect results with 50K+ views
-            for video, stat in zip(videos, stats_data["items"]):
-                title = video["snippet"].get("title", "N/A")
-                description = video["snippet"].get("description", "")[:200]
-                video_url = f"https://www.youtube.com/watch?v={video['id']['videoId']}"
-                views = int(stat["statistics"].get("viewCount", 0))
+# Fetch video statistics
+if video_ids:
+stats_params = {"part": "statistics", "id": ",".join(video_ids), "key": API_KEY}
+stats_response = requests.get(YOUTUBE_VIDEO_URL, params=stats_params)
+stats_data = stats_response.json()
 
-                if views >= 50000:
-                    all_results.append({
-                        "Title": title,
-                        "Description": description,
-                        "URL": video_url,
-                        "Views": views
-                    })
+if "items" not in stats_data:
+st.warning(f"Failed to fetch video statistics for keyword: {keyword}")
+continue
 
-        # Display results
-        if all_results:
-            st.success(f"Found {len(all_results)} viral videos!")
-            for result in all_results:
-                st.markdown(
-                    f"**Title:** {result['Title']}  \n"
-                    f"**Description:** {result['Description']}  \n"
-                    f"**URL:** [Watch Video]({result['URL']})  \n"
-                    f"**Views:** {result['Views']}  "
-                )
-                st.write("---")
-        else:
-            st.warning("No viral videos found with more than 50,000 views in the selected time range.")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+# Collect results with 50K+ views
+for video, stat in zip(videos, stats_data["items"]):
+title = video["snippet"].get("title", "N/A")
+description = video["snippet"].get("description", "")[:200]
+video_url = f"https://www.youtube.com/watch?v={video['id']['videoId']}"
+views = int(stat["statistics"].get("viewCount", 0))
+
+if views >= 50000:
+all_results.append({
+"Title": title,
+"Description": description,
+"URL": video_url,
+"Views": views
+})
+
+# Display results
+if all_results:
+st.success(f"Found {len(all_results)} viral videos!")
+for result in all_results:
+st.markdown(
+f"**Title:** {result['Title']} \n"
+f"**Description:** {result['Description']} \n"
+f"**URL:** [Watch Video]({result['URL']}) \n"
+f"**Views:** {result['Views']} "
+)
+st.write("---")
+else:
+st.warning("No viral videos found with more than 50,000 views in the selected time range.")
+except Exception as e:
+st.error(f"An error occurred: {e}")
