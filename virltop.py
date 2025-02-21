@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 API_KEY = "AIzaSyCelOVWXb6wIietQ1Yo1nNmIC791qtYrk4"
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
-YOUTUBE_CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
 
 # Streamlit App Title
 st.title("YouTube Viral Topics Tool")
@@ -69,14 +68,12 @@ if st.button("Fetch Viral Videos"):
             # Collect results with 50K+ views
             for video, stat in zip(videos, stats_data["items"]):
                 title = video["snippet"].get("title", "N/A")
-                description = video["snippet"].get("description", "")[:200]
                 video_url = f"https://www.youtube.com/watch?v={video['id']['videoId']}"
                 views = int(stat["statistics"].get("viewCount", 0))
 
                 if views >= 50000:
                     all_results.append({
                         "Title": title,
-                        "Description": description,
                         "URL": video_url,
                         "Views": views
                     })
@@ -87,7 +84,6 @@ if st.button("Fetch Viral Videos"):
             for result in all_results:
                 st.markdown(
                     f"**Title:** {result['Title']}  \n"
-                    f"**Description:** {result['Description']}  \n"
                     f"**URL:** [Watch Video]({result['URL']})  \n"
                     f"**Views:** {result['Views']}  "
                 )
